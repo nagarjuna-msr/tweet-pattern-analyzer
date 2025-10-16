@@ -52,10 +52,7 @@ services:
     autoDeploy: true
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: pattern-analyzer-api
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://pattern-analyzer-api.onrender.com
 
 databases:
   - name: pattern-analyzer-db
