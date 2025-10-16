@@ -8,6 +8,7 @@ alembic==1.14.0
 # Auth & Security - Python 3.13 compatible
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==4.0.1  # Pin to 4.0.1 for passlib 1.7.4 compatibility
 python-multipart==0.0.12
 
 # Configuration - Python 3.13 compatible
