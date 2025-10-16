@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: pattern-analyzer-api
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: |
+      cd backend
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python create_admin.py
+      python seed_prompts.py
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pattern-analyzer-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRATION_MINUTES
+        value: 43200
+      - key: FRONTEND_URL
+        value: https://pattern-analyzer.onrender.com
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false
+      - key: LOBSTR_API_KEY
+        sync: false
+      - key: TWITTER_AUTH_TOKEN
+        sync: false
+      - key: TWITTER_CT0
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: pattern-analyzer-db
+    databaseName: pattern_analyzer
+    plan: starter
+    region: oregon
+
+
