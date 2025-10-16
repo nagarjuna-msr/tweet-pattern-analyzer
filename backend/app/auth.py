@@ -16,10 +16,18 @@ security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain password against a hashed password"""
+    # Bcrypt has a 72-byte limit, truncate if necessary
+    plain_password = plain_password[:72]
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
-    """Hash a password"""
+    """Hash a password for storage
+    
+    Note: Bcrypt has a 72-byte limit. We truncate passwords to ensure
+    compatibility with auto-generated passwords from Render.
+    """
+    # Bcrypt has a 72-byte password limit, truncate if necessary
+    password = password[:72]
     return pwd_context.hash(password)
 
 def create_access_token(user_id: int) -> str:
