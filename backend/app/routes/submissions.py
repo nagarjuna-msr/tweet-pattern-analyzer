@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 from ..database import get_db
@@ -13,15 +13,15 @@ router = APIRouter(prefix="/api/submissions", tags=["submissions"])
 
 def check_weekly_limit(user: User, db: Session):
     """Check and reset weekly submission limit"""
-    # Calculate start of current week (Monday)
-    today = datetime.utcnow()
+    # Calculate start of current week (Monday) - timezone aware
+    today = datetime.now(timezone.utc)
     days_since_monday = today.weekday()
     week_start = (today - timedelta(days=days_since_monday)).replace(hour=0, minute=0, second=0, microsecond=0)
     
     # Reset if last reset was before this week
     if user.last_submission_reset < week_start:
         user.weekly_submission_count = 0
-        user.last_submission_reset = datetime.utcnow()
+        user.last_submission_reset = datetime.now(timezone.utc)
         db.commit()
     
     # Check limit
@@ -42,7 +42,7 @@ def submit_profiles(
     check_weekly_limit(current_user, db)
     
     # Calculate expected delivery (8 hours from now)
-    expected_delivery = datetime.utcnow() + timedelta(hours=8)
+    expected_delivery = datetime.now(timezone.utc) + timedelta(hours=8)
     
     # Create submission
     submission = ProfileSubmission(
