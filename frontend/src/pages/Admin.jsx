@@ -1,24 +1,50 @@
 import { useQuery } from '@tanstack/react-query';
 import Layout from '@/components/Layout';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Users, AlertCircle, CheckCircle, MessageCircle, ArrowRight } from 'lucide-react';
-import { adminAPI } from '@/lib/api';
+import { adminAPI, authAPI } from '@/lib/api';
 
 export default function Admin() {
-  // Fetch all users with stats
-  const { data: users } = useQuery({
+  // Check if current user is admin
+  const { data: currentUser, isLoading: loadingAuth } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => {
+      const response = await authAPI.getMe();
+      return response.data;
+    },
+  });
+
+  // Redirect non-admin users to dashboard
+  if (!loadingAuth && currentUser && !currentUser.is_admin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // Fetch all users with stats (only if admin)
+  const { data: users, isLoading: loadingUsers } = useQuery({
     queryKey: ['admin-users-summary'],
     queryFn: async () => {
       const response = await adminAPI.getUsers();
       return response.data;
     },
     refetchInterval: 30000,
+    enabled: !!currentUser && currentUser.is_admin, // Only fetch if user is admin
   });
 
   const usersWithPendingWork = users?.filter(u => u.has_pending_work) || [];
   const totalPendingSubmissions = users?.reduce((sum, u) => sum + u.pending_submissions, 0) || 0;
   const totalPendingContent = users?.reduce((sum, u) => sum + u.pending_content, 0) || 0;
   const totalFeedback = users?.reduce((sum, u) => sum + u.feedback_count, 0) || 0;
+
+  // Show loading while checking auth or fetching users
+  if (loadingAuth || loadingUsers) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
