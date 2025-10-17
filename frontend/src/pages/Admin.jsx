@@ -5,6 +5,7 @@ import { Users, AlertCircle, CheckCircle, MessageCircle, ArrowRight } from 'luci
 import { adminAPI, authAPI } from '@/lib/api';
 
 export default function Admin() {
+  // ✅ FIX: ALL HOOKS MUST BE CALLED BEFORE ANY RETURN
   // Check if current user is admin
   const { data: currentUser, isLoading: loadingAuth } = useQuery({
     queryKey: ['current-user'],
@@ -14,12 +15,7 @@ export default function Admin() {
     },
   });
 
-  // Redirect non-admin users to dashboard
-  if (!loadingAuth && currentUser && !currentUser.is_admin) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // Fetch all users with stats (only if admin)
+  // Fetch all users with stats (disabled if not admin)
   const { data: users, isLoading: loadingUsers } = useQuery({
     queryKey: ['admin-users-summary'],
     queryFn: async () => {
@@ -29,6 +25,12 @@ export default function Admin() {
     refetchInterval: 30000,
     enabled: !!currentUser && currentUser.is_admin, // Only fetch if user is admin
   });
+
+  // ✅ NOW safe to return early - all hooks have been called
+  // Redirect non-admin users to dashboard
+  if (!loadingAuth && currentUser && !currentUser.is_admin) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const usersWithPendingWork = users?.filter(u => u.has_pending_work) || [];
   const totalPendingSubmissions = users?.reduce((sum, u) => sum + u.pending_submissions, 0) || 0;

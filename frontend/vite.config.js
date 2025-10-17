@@ -10,6 +10,18 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    sourcemap: true, // ✅ Enable source maps for debugging production errors
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          query: ['@tanstack/react-query'],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {
@@ -20,4 +32,3 @@ export default defineConfig({
     },
   },
 })
-// Build trigger: 1760650790

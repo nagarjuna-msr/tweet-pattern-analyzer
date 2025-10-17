@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [showAllSubmissions, setShowAllSubmissions] = useState(false);
   const [showAllContent, setShowAllContent] = useState(false);
 
+  // ✅ FIX: ALL HOOKS MUST BE CALLED BEFORE ANY RETURN
   // Check if user is admin
   const { data: currentUser, isLoading: loadingUser } = useQuery({
     queryKey: ['current-user'],
@@ -18,12 +19,7 @@ export default function Dashboard() {
     },
   });
 
-  // Redirect admin users to admin panel
-  if (currentUser?.is_admin) {
-    return <Navigate to="/admin" replace />;
-  }
-
-  // Only fetch submissions and content after we know the user is not an admin
+  // Fetch submissions (disabled if admin)
   const { data: submissions, isLoading: loadingSubmissions } = useQuery({
     queryKey: ['submissions'],
     queryFn: async () => {
@@ -34,6 +30,7 @@ export default function Dashboard() {
     enabled: !!currentUser && !currentUser.is_admin, // Only run if user exists and is not admin
   });
 
+  // Fetch content ideas (disabled if admin)
   const { data: contentIdeas, isLoading: loadingContent } = useQuery({
     queryKey: ['my-content-brief'],
     queryFn: async () => {
@@ -43,6 +40,12 @@ export default function Dashboard() {
     refetchInterval: 30000,
     enabled: !!currentUser && !currentUser.is_admin, // Only run if user exists and is not admin
   });
+
+  // ✅ NOW safe to return early - all hooks have been called
+  // Redirect admin users to admin panel
+  if (currentUser?.is_admin) {
+    return <Navigate to="/admin" replace />;
+  }
 
   const isLoading = loadingUser || loadingSubmissions || loadingContent;
 
