@@ -20,6 +20,10 @@ export default function AdminUserDetail() {
   const [tweetText, setTweetText] = useState('');
   const [patternUsed, setPatternUsed] = useState('');
   const [reasoning, setReasoning] = useState('');
+  
+  // Analysis upload state
+  const [analysisFile, setAnalysisFile] = useState(null);
+  const [keyPatterns, setKeyPatterns] = useState([{ pattern_name: '', description: '' }]);
 
   // Fetch complete user details
   const { data: userDetails, isLoading, refetch } = useQuery({
@@ -43,6 +47,41 @@ export default function AdminUserDetail() {
     },
     onError: (error) => {
       toast.error(error.response?.data?.detail || 'Failed to create tweet');
+    },
+  });
+
+  const uploadAnalysisMutation = useMutation({
+    mutationFn: async ({ submission_id, file, patterns }) => {
+      let documentUrl = null;
+      let documentType = null;
+
+      // Step 1: Upload document if provided
+      if (file) {
+        const uploadResponse = await adminAPI.uploadDocument(submission_id, file);
+        documentUrl = uploadResponse.data.document_url;
+        documentType = uploadResponse.data.document_type;
+      }
+
+      // Step 2: Create analysis with patterns
+      const analysisResponse = await adminAPI.createAnalysis({
+        submission_id,
+        key_patterns: patterns.filter(p => p.pattern_name && p.description),
+        document_url: documentUrl,
+        document_type: documentType,
+      });
+
+      return analysisResponse.data;
+    },
+    onSuccess: () => {
+      toast.success('✅ Analysis uploaded successfully!');
+      setShowAnalysisModal(false);
+      setSelectedSubmission(null);
+      setAnalysisFile(null);
+      setKeyPatterns([{ pattern_name: '', description: '' }]);
+      refetch();
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.detail || 'Failed to upload analysis');
     },
   });
 
@@ -96,6 +135,37 @@ export default function AdminUserDetail() {
       pattern_used: patternUsed,
       reasoning: reasoning
     });
+  };
+
+  const handleUploadAnalysis = () => {
+    if (!selectedSubmission) return;
+
+    // Validate at least one pattern
+    const validPatterns = keyPatterns.filter(p => p.pattern_name && p.description);
+    if (validPatterns.length === 0) {
+      toast.error('Please add at least one pattern');
+      return;
+    }
+
+    uploadAnalysisMutation.mutate({
+      submission_id: selectedSubmission.id,
+      file: analysisFile,
+      patterns: keyPatterns,
+    });
+  };
+
+  const addPattern = () => {
+    setKeyPatterns([...keyPatterns, { pattern_name: '', description: '' }]);
+  };
+
+  const removePattern = (index) => {
+    setKeyPatterns(keyPatterns.filter((_, i) => i !== index));
+  };
+
+  const updatePattern = (index, field, value) => {
+    const updated = [...keyPatterns];
+    updated[index][field] = value;
+    setKeyPatterns(updated);
   };
 
   return (
@@ -483,6 +553,168 @@ export default function AdminUserDetail() {
             </div>
           )}
         </div>
+
+        {/* Upload Analysis Modal */}
+        {showAnalysisModal && selectedSubmission && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+            <div className="bg-white rounded-xl max-w-3xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Upload Analysis for Submission #{selectedSubmission.id}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowAnalysisModal(false);
+                    setSelectedSubmission(null);
+                    setAnalysisFile(null);
+                    setKeyPatterns([{ pattern_name: '', description: '' }]);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Submission Info */}
+              <div className="mb-6 bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600 mb-2">User: {userDetails.user.email}</p>
+                <p className="text-sm text-gray-600 mb-2">{selectedSubmission.profile_urls.length} profiles:</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedSubmission.profile_urls.map((url, idx) => (
+                    <a
+                      key={idx}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-xs"
+                    >
+                      @{url.split('/').pop()}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Key Patterns Section */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Key Patterns * (at least 1 required)
+                  </label>
+                  <button
+                    onClick={addPattern}
+                    className="inline-flex items-center space-x-1 text-primary hover:text-primary-hover text-sm font-medium"
+                  >
+                    <Plus size={16} />
+                    <span>Add Pattern</span>
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {keyPatterns.map((pattern, index) => (
+                    <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="flex items-start justify-between mb-3">
+                        <h4 className="text-sm font-medium text-gray-900">Pattern {index + 1}</h4>
+                        {keyPatterns.length > 1 && (
+                          <button
+                            onClick={() => removePattern(index)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X size={18} />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Pattern Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={pattern.pattern_name}
+                            onChange={(e) => updatePattern(index, 'pattern_name', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
+                            placeholder="e.g., Question-Hook Pattern"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">
+                            Description *
+                          </label>
+                          <textarea
+                            value={pattern.description}
+                            onChange={(e) => updatePattern(index, 'description', e.target.value)}
+                            rows={3}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none text-sm"
+                            placeholder="Describe what makes this pattern work..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Document Upload Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Analysis Document (Optional)
+                </label>
+                <p className="text-xs text-gray-500 mb-3">
+                  Upload detailed analysis (.md, .pdf, or .txt file)
+                </p>
+                <input
+                  type="file"
+                  accept=".md,.pdf,.txt"
+                  onChange={(e) => setAnalysisFile(e.target.files[0])}
+                  className="block w-full text-sm text-gray-600
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-lg file:border-0
+                    file:text-sm file:font-medium
+                    file:bg-primary file:text-white
+                    hover:file:bg-primary-hover
+                    file:cursor-pointer cursor-pointer"
+                />
+                {analysisFile && (
+                  <div className="mt-2 flex items-center space-x-2 text-sm text-gray-600">
+                    <FileText size={16} />
+                    <span>{analysisFile.name}</span>
+                    <button
+                      onClick={() => setAnalysisFile(null)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center space-x-3 pt-6 border-t">
+                <button
+                  onClick={() => {
+                    setShowAnalysisModal(false);
+                    setSelectedSubmission(null);
+                    setAnalysisFile(null);
+                    setKeyPatterns([{ pattern_name: '', description: '' }]);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  disabled={uploadAnalysisMutation.isPending}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUploadAnalysis}
+                  disabled={uploadAnalysisMutation.isPending}
+                  className="flex-1 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg disabled:opacity-50 font-medium"
+                >
+                  {uploadAnalysisMutation.isPending ? 'Uploading...' : 'Upload Analysis'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Create Tweet Modal */}
         {showTweetModal && selectedIdea && (

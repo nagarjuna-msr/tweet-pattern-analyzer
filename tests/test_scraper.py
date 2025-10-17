@@ -18,7 +18,7 @@ LOBSTR_TWITTER_CT0 = '1eede4eeef2029b15abc3a1f2cef87c4c4e677170a8d850c2dfd103f25
 
 def main():
     print("="*80)
-    print("TESTING WITH PROVEN WORKING SCRAPER")
+    print("Scraping tweets for @dharmeshba")
     print("="*80)
     print()
     
@@ -29,30 +29,32 @@ def main():
         twitter_ct0=LOBSTR_TWITTER_CT0
     )
     
-    # Test with @samruddhi_mokal - 5 tweets
-    print("Fetching 5 tweets from @samruddhi_mokal...")
+    # Test with @dharmeshba - 150 tweets
+    print("Fetching 150 tweets from @dharmeshba...")
     print("-"*80)
     
     results = scraper.scrape_tweets({
-        'searchTerms': ['from:samruddhi_mokal -filter:retweets -filter:replies'],
-        'maxItems': 5
+        'searchTerms': ['from:dharmeshba -filter:retweets -filter:replies'],
+        'maxItems': 150
     })
     
     print(f"\n✅ Got {len(results)} tweets")
     
     if len(results) > 0:
-        # Verify all from samruddhi_mokal
+        # Verify all from dharmeshba
         from_user = sum(1 for t in results 
-                       if t.get('raw_data', {}).get('username', '').lower() == 'samruddhi_mokal')
+                       if t.get('raw_data', {}).get('username', '').lower() == 'dharmeshba')
         
-        print(f"   All from @samruddhi_mokal: {from_user}/{len(results)}")
+        print(f"   All from @dharmeshba: {from_user}/{len(results)}")
         
-        if from_user == len(results) == 5:
-            print("   🎉 PERFECT! Got exactly 5 tweets from the correct user!")
+        if from_user == len(results) and len(results) >= 150:
+            print(f"   🎉 PERFECT! Got {len(results)} tweets from the correct user!")
+        elif from_user == len(results):
+            print(f"   🎉 All tweets are from the correct user! Got {len(results)} tweets.")
         
-        # Show the tweets
-        print(f"\n📋 Tweets:")
-        for i, tweet in enumerate(results, 1):
+        # Show the first 5 tweets
+        print(f"\n📋 Tweets (showing first 5):")
+        for i, tweet in enumerate(results[:5], 1):
             raw = tweet.get('raw_data', {})
             text = raw.get('content', '')[:100]
             likes = raw.get('likes', 0)
@@ -62,7 +64,7 @@ def main():
             print(f"   💙 {likes:,} likes | 🔄 {rts:,} retweets")
         
         # Save
-        output_file = Path(__file__).parent / 'samruddhi_mokal_5_tweets.json'
+        output_file = Path(__file__).parent / 'dharmeshba_150_tweets.json'
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
         
@@ -73,7 +75,7 @@ def main():
         print(f"💰 Cost: ${cost:.6f}")
         
         print("\n" + "="*80)
-        print("✅ TEST SUCCESSFUL - SCRAPER WORKS PERFECTLY!")
+        print("✅ SCRAPING SUCCESSFUL!")
         print("="*80)
     else:
         print("❌ No tweets found")
