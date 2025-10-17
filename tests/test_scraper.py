@@ -9,7 +9,7 @@ import json
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from tweet_scraper.scraper import LobstrTwitterScraper
+from profile_scraper.scraper import LobstrTwitterScraper
 
 # Credentials
 LOBSTR_API_KEY = 'a27fed0476a5c48f8b46d51bfa3429bc96307e67'
