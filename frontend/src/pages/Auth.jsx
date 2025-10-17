@@ -54,7 +54,7 @@ function WhyThisWorksModal({ isOpen, onClose }) {
         {/* Content */}
         <div className="p-6 space-y-6 text-gray-300">
           <p className="text-base leading-relaxed">
-            Twitter's algorithm changed in 2023. Here's what that means for your content:
+            Twitter's algorithm keeps evolving—especially in the era of AI-generated content. They're actively filtering bots and boosting authentic voices. Here's what matters now:
           </p>
 
           {/* The Numbers */}
@@ -75,47 +75,46 @@ function WhyThisWorksModal({ isOpen, onClose }) {
           {/* What We Focus On */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white flex items-center">
-              <span className="mr-2">🎯</span> What We Focus On
+              <span className="mr-2">🎯</span> What We Analyze
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
                 <Zap className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-white">Hooks that make people want to reply</p>
-                  <p className="text-sm text-gray-400">Not just scroll past and like</p>
+                  <p className="font-medium text-white">Domain-specific viral patterns</p>
+                  <p className="text-sm text-gray-400">What works in your niche isn't generic—word choice, topics, and tone matter</p>
                 </div>
               </li>
               <li className="flex items-start space-x-3">
                 <FileText className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-white">Thread structures that keep people reading</p>
-                  <p className="text-sm text-gray-400">The algorithm rewards dwell time</p>
+                  <p className="font-medium text-white">Target audience dynamics</p>
+                  <p className="text-sm text-gray-400">Different audiences respond to different structures and hooks</p>
                 </div>
               </li>
               <li className="flex items-start space-x-3">
                 <TrendingUp className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-white">Topics that spark conversation</p>
-                  <p className="text-sm text-gray-400">Not just agreement, but discussion</p>
+                  <p className="font-medium text-white">Competitor tweet structures</p>
+                  <p className="text-sm text-gray-400">We analyze what's actually working for successful accounts in your space</p>
                 </div>
               </li>
             </ul>
           </div>
 
-          {/* Why Manual Analysis */}
+          {/* The Analysis System */}
           <div className="bg-primary/10 border border-primary/30 rounded-lg p-5 space-y-3">
             <h3 className="text-lg font-semibold text-white flex items-center">
-              <span className="mr-2">⚠️</span> Why Manual Analysis
+              <span className="mr-2">🔬</span> Our Analysis System
             </h3>
             <p className="text-sm leading-relaxed">
-              Right now, we're manually analyzing accounts and writing reports. That's 2-3 hours per user.
+              We have a robust analysis system trained on 75,000+ viral tweets. It identifies patterns specific to your niche and target audience.
             </p>
             <p className="text-sm leading-relaxed">
-              We're starting with <strong className="text-white">5 spots</strong> to make sure the quality is there. 
-              If this works, we'll scale it.
+              Right now, we're running the system manually for this MVP to ensure quality. We're starting with <strong className="text-white">5 spots</strong> to optimize the process before scaling.
             </p>
             <p className="text-sm leading-relaxed font-medium text-white">
-              No magic. No automation. Just pattern recognition from 75,000+ viral tweets and good writing.
+              Why the right profiles matter: Domain-specific nuances, word choice, and audience behavior patterns are critical. Generic patterns don't work—you need patterns from accounts that resonate with your specific audience.
             </p>
           </div>
         </div>
@@ -188,9 +187,9 @@ export default function Auth() {
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left side - Value Proposition */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-600 to-purple-700 p-12 text-white flex-col justify-center relative overflow-hidden">
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Left side - Value Proposition (shown on both mobile and desktop) */}
+      <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-purple-700 p-6 md:p-12 text-white flex flex-col justify-center relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -199,24 +198,25 @@ export default function Auth() {
           }}></div>
         </div>
         
-        <div className="max-w-md mx-auto relative z-10">
-          <h1 className="text-4xl font-bold mb-3 leading-tight">
+        <div className="max-w-md mx-auto relative z-10 w-full">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3 leading-tight">
             See What's Working.<br />
             Do More of It.
           </h1>
-          <p className="text-white/90 mb-8 text-lg">
+          <p className="text-white/90 mb-6 md:mb-8 text-base md:text-lg">
             Patterns from 75,000+ viral tweets. Applied to your authentic voice.
           </p>
           
-          <div className="space-y-6">
+          {/* Steps - Collapsible on mobile */}
+          <div className="space-y-4 md:space-y-6">
             <Step icon={Target} title="Submit 5-10 Profiles That Work">
-              Give us Twitter accounts in your niche that get good engagement. We'll find what they're doing right.
+              Give us Twitter accounts in your niche that get good engagement. We'll deeply analyse their high engagement tweets and find why their tweets work.
             </Step>
-            <Step icon={Zap} title="See the Patterns">
-              Get a report showing which hooks get replies, thread structures that work, and topics that perform.
+            <Step icon={Zap} title="Get the Analysis Report">
+              See which hooks get replies, thread structures that go viral—patterns that work and don't work in your niche.
             </Step>
-            <Step icon={FileText} title="Turn Your Ideas Into Threads">
-              Share what you want to say. We'll structure it using patterns that work—without losing your voice.
+            <Step icon={FileText} title="Turn Your Ideas Into Viral Tweets">
+              Share what you want to say. We'll structure it using patterns that work, with your authentic voice.
             </Step>
             <Step icon={TrendingUp} title="Post and Track Results">
               The patterns work because they're based on what already gets replies. More replies = more reach.
@@ -226,13 +226,13 @@ export default function Auth() {
           {/* Modal trigger button */}
           <button 
             onClick={() => setShowModal(true)}
-            className="w-full text-left mt-8 bg-white/10 hover:bg-white/20 p-4 rounded-lg transition-all duration-200 group border border-white/20"
+            className="w-full text-left mt-6 md:mt-8 bg-white/10 hover:bg-white/20 p-3 md:p-4 rounded-lg transition-all duration-200 group border border-white/20"
           >
             <div className="flex items-center space-x-3">
               <Info className="w-5 h-5 text-white flex-shrink-0" />
               <div className="flex-1">
-                <h4 className="font-semibold text-white">Why Replies Matter More Than Likes</h4>
-                <p className="text-xs text-white/70 mt-0.5">The algorithm changed. Here's what matters now.</p>
+                <h4 className="font-semibold text-white text-sm md:text-base">Why Replies Matter More Than Likes</h4>
+                <p className="text-xs text-white/70 mt-0.5">The algorithm keeps changing. Here's what matters now.</p>
               </div>
               <span className="text-xs text-white/60 group-hover:text-white/90 transition-colors">
                 Read more →
@@ -243,10 +243,10 @@ export default function Auth() {
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-8 bg-white">
         <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="md:hidden mb-8 text-center">
+          {/* Logo for both mobile and desktop */}
+          <div className="mb-6 md:mb-8 text-center md:text-left">
             <h1 className="text-2xl font-bold text-gray-900">Pattern Analyzer</h1>
             <p className="text-sm text-gray-600 mt-1">Content based on what works</p>
           </div>
