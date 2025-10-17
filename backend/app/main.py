@@ -25,17 +25,25 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# CORS configuration
+# CORS configuration - Allow all Render frontend URLs
+allowed_origins = [
+    settings.FRONTEND_URL,
+    "http://localhost:5173",
+    "http://localhost:5174",  # Vite alternate port
+    "https://pattern-analyzer-frontend.onrender.com",  # Static site
+    "https://pattern-analyzer-frontend-app.onrender.com",  # Web service (if exists)
+]
+
+# Filter out empty strings and ensure unique origins
+allowed_origins = list(set(filter(None, allowed_origins)))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        settings.FRONTEND_URL,
-        "http://localhost:5173",
-        "https://pattern-analyzer-frontend.onrender.com"
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Include routers
