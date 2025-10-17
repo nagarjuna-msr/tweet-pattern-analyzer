@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminAPI } from '@/lib/api';
+import { adminAPI, contentAPI } from '@/lib/api';
 import Layout from '@/components/Layout';
 import { toast } from 'sonner';
 import { Plus, X, MessageCircle, RefreshCw } from 'lucide-react';
@@ -18,13 +18,8 @@ export default function AdminContent() {
   const { data: allIdeas, isLoading } = useQuery({
     queryKey: ['admin-content-ideas'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/admin/content-ideas', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (!response.ok) throw new Error('Failed to fetch content ideas');
-      return response.json();
+      const response = await adminAPI.getContentIdeas();
+      return response.data;
     },
     refetchInterval: 30000,
     retry: 2,
@@ -36,18 +31,8 @@ export default function AdminContent() {
     queryFn: async () => {
       if (!selectedIdeaForFeedback) return [];
       
-      const response = await fetch(`http://localhost:8000/api/content/${selectedIdeaForFeedback}/tweets`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (!response.ok) {
-        console.error('Failed to fetch tweets');
-        return [];
-      }
-      
-      return response.json();
+      const response = await contentAPI.getTweets(selectedIdeaForFeedback);
+      return response.data;
     },
     enabled: !!selectedIdeaForFeedback,
     refetchInterval: 10000, // Auto-refresh every 10 seconds

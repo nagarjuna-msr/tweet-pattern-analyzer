@@ -68,6 +68,7 @@ export const adminAPI = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  getContentIdeas: () => api.get('/api/admin/content-ideas'),
   createTweet: (data) => api.post('/api/admin/tweets/create', data),
   updateTweet: (tweet_id, data) => api.put(`/api/admin/tweets/${tweet_id}`, data),
   deleteTweet: (tweet_id) => api.delete(`/api/admin/tweets/${tweet_id}`),
