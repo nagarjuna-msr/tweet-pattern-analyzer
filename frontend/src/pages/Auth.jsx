@@ -157,15 +157,20 @@ export default function Auth() {
       const user = userResponse.data;
       
       if (user.is_admin) {
-        toast.success('Welcome, Admin!');
+        toast.success('✅ Login successful! Welcome, Admin!');
         navigate('/admin');
       } else {
-        toast.success('Welcome back!');
+        toast.success('✅ Login successful! Redirecting to dashboard...');
         navigate('/dashboard');
       }
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Login failed');
+      const errorMessage = error.response?.data?.detail || 'Login failed';
+      if (error.response?.status === 401) {
+        toast.error('❌ Login failed: Incorrect email or password. Please check your credentials and try again.');
+      } else {
+        toast.error(`❌ Login failed: ${errorMessage}`);
+      }
     },
   });
 
@@ -173,11 +178,18 @@ export default function Auth() {
     mutationFn: () => authAPI.register(email, password),
     onSuccess: (response) => {
       setToken(response.data.access_token);
-      toast.success('Account created successfully!');
+      toast.success('✅ Signup successful! Your account has been created. Redirecting to onboarding...');
       navigate('/onboarding');
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Registration failed');
+      const errorMessage = error.response?.data?.detail || 'Registration failed';
+      if (error.response?.status === 400 && errorMessage.includes('already registered')) {
+        toast.error('❌ Signup failed: This email is already registered. Please login instead.');
+      } else if (error.response?.status === 422) {
+        toast.error('❌ Signup failed: Please check that your email is valid and password is at least 8 characters.');
+      } else {
+        toast.error(`❌ Signup failed: ${errorMessage}`);
+      }
     },
   });
 
@@ -185,17 +197,9 @@ export default function Auth() {
     e.preventDefault();
     
     if (!isLogin) {
-      // Validate password for registration
+      // Basic validation
       if (password.length < 8) {
         toast.error('Password must be at least 8 characters');
-        return;
-      }
-      if (!/[A-Z]/.test(password)) {
-        toast.error('Password must contain at least one uppercase letter');
-        return;
-      }
-      if (!/[0-9]/.test(password)) {
-        toast.error('Password must contain at least one number');
         return;
       }
     }
@@ -332,7 +336,7 @@ export default function Auth() {
               />
               {!isLogin && (
                 <p className="mt-1 text-xs text-gray-500">
-                  Min 8 characters, 1 uppercase, 1 number
+                  Minimum 8 characters
                 </p>
               )}
             </div>
