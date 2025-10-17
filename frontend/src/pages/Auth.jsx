@@ -59,8 +59,8 @@ function WhyThisWorksModal({ isOpen, onClose }) {
 
           {/* The Numbers */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
-              <span className="mr-2">📊</span> The Numbers
+            <h3 className="text-lg font-semibold text-white flex items-center border-l-4 border-orange-500 pl-3">
+              The Numbers
             </h3>
             <ul className="space-y-2 ml-6 text-sm">
               <li>• A reply where you engage back = <strong className="text-white">75x weight</strong></li>
@@ -72,28 +72,34 @@ function WhyThisWorksModal({ isOpen, onClose }) {
             </p>
           </div>
 
-          {/* What We Focus On */}
+          {/* What We Analyze */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
-              <span className="mr-2">🎯</span> What We Analyze
+            <h3 className="text-lg font-semibold text-white flex items-center border-l-4 border-orange-500 pl-3">
+              What We Analyze
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
-                <Zap className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
+                <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-5 h-5 text-orange-400" />
+                </div>
                 <div>
                   <p className="font-medium text-white">Domain-specific viral patterns</p>
                   <p className="text-sm text-gray-400">What works in your niche isn't generic—word choice, topics, and tone matter</p>
                 </div>
               </li>
               <li className="flex items-start space-x-3">
-                <FileText className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
+                <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-5 h-5 text-orange-400" />
+                </div>
                 <div>
                   <p className="font-medium text-white">Target audience dynamics</p>
                   <p className="text-sm text-gray-400">Different audiences respond to different structures and hooks</p>
                 </div>
               </li>
               <li className="flex items-start space-x-3">
-                <TrendingUp className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
+                <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-5 h-5 text-orange-400" />
+                </div>
                 <div>
                   <p className="font-medium text-white">Competitor tweet structures</p>
                   <p className="text-sm text-gray-400">We analyze what's actually working for successful accounts in your space</p>
@@ -103,9 +109,9 @@ function WhyThisWorksModal({ isOpen, onClose }) {
           </div>
 
           {/* The Analysis System */}
-          <div className="bg-primary/10 border border-primary/30 rounded-lg p-5 space-y-3">
-            <h3 className="text-lg font-semibold text-white flex items-center">
-              <span className="mr-2">🔬</span> Our Analysis System
+          <div className="bg-orange-500/10 border-2 border-orange-500/30 rounded-lg p-5 space-y-3">
+            <h3 className="text-lg font-semibold text-white flex items-center border-l-4 border-orange-500 pl-3">
+              Our Analysis System
             </h3>
             <p className="text-sm leading-relaxed">
               We have a robust analysis system trained on 75,000+ viral tweets. It identifies patterns specific to your niche and target audience.
@@ -123,7 +129,7 @@ function WhyThisWorksModal({ isOpen, onClose }) {
         <div className="sticky bottom-0 bg-gray-900 border-t border-gray-700 p-6">
           <button
             onClick={onClose}
-            className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-3 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/50"
           >
             Got it
           </button>
@@ -187,14 +193,14 @@ export default function Auth() {
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       {/* Left side - Value Proposition (shown on both mobile and desktop) */}
-      <div className="w-full md:w-1/2 bg-gradient-to-br from-blue-600 to-purple-700 p-6 md:p-12 text-white flex flex-col justify-center relative overflow-hidden">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-10">
+      <div className="w-full md:w-1/2 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 p-6 md:p-12 text-white flex flex-col justify-center relative overflow-hidden">
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
-            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-            backgroundSize: '30px 30px'
+            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+            backgroundSize: '50px 50px'
           }}></div>
         </div>
         
@@ -223,18 +229,20 @@ export default function Auth() {
             </Step>
           </div>
           
-          {/* Modal trigger button */}
+          {/* Modal trigger button - Dark theme with orange accent */}
           <button 
             onClick={() => setShowModal(true)}
-            className="w-full text-left mt-6 md:mt-8 bg-white/10 hover:bg-white/20 p-3 md:p-4 rounded-lg transition-all duration-200 group border border-white/20"
+            className="w-full text-left mt-6 md:mt-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 p-4 md:p-5 rounded-xl transition-all duration-300 group shadow-lg shadow-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/50 hover:-translate-y-1 border-2 border-orange-400"
           >
             <div className="flex items-center space-x-3">
-              <Info className="w-5 h-5 text-white flex-shrink-0" />
-              <div className="flex-1">
-                <h4 className="font-semibold text-white text-sm md:text-base">Why Replies Matter More Than Likes</h4>
-                <p className="text-xs text-white/70 mt-0.5">The algorithm keeps changing. Here's what matters now.</p>
+              <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
+                <Info className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xs text-white/60 group-hover:text-white/90 transition-colors">
+              <div className="flex-1">
+                <h4 className="font-bold text-white text-base md:text-lg">Why Replies Matter More Than Likes</h4>
+                <p className="text-sm text-white/90 mt-0.5">The algorithm keeps changing. Here's what matters now.</p>
+              </div>
+              <span className="text-sm text-white/90 group-hover:text-white font-medium transition-colors">
                 Read more →
               </span>
             </div>
