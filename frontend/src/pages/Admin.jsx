@@ -2,16 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import Layout from '@/components/Layout';
 import { Link } from 'react-router-dom';
 import { Users, AlertCircle, CheckCircle, MessageCircle, ArrowRight } from 'lucide-react';
+import { adminAPI } from '@/lib/api';
 
 export default function Admin() {
   // Fetch all users with stats
   const { data: users } = useQuery({
     queryKey: ['admin-users-summary'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/admin/users', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      return response.json();
+      const response = await adminAPI.getUsers();
+      return response.data;
     },
     refetchInterval: 30000,
   });

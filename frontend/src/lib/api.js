@@ -60,6 +60,8 @@ export const contentAPI = {
 };
 
 export const adminAPI = {
+  getUsers: () => api.get('/api/admin/users'),
+  getUserDetails: (user_id) => api.get(`/api/admin/users/${user_id}`),
   createAnalysis: (data) => api.post('/api/admin/analysis/create', data),
   uploadDocument: (submission_id, file) => {
     const formData = new FormData();

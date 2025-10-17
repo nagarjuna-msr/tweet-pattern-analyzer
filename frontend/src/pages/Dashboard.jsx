@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [showAllContent, setShowAllContent] = useState(false);
 
   // Check if user is admin
-  const { data: currentUser } = useQuery({
+  const { data: currentUser, isLoading: loadingUser } = useQuery({
     queryKey: ['current-user'],
     queryFn: async () => {
       const response = await authAPI.getMe();
@@ -23,6 +23,7 @@ export default function Dashboard() {
     return <Navigate to="/admin" replace />;
   }
 
+  // Only fetch submissions and content after we know the user is not an admin
   const { data: submissions, isLoading: loadingSubmissions } = useQuery({
     queryKey: ['submissions'],
     queryFn: async () => {
@@ -30,6 +31,7 @@ export default function Dashboard() {
       return response.data;
     },
     refetchInterval: 30000,
+    enabled: !!currentUser && !currentUser.is_admin, // Only run if user exists and is not admin
   });
 
   const { data: contentIdeas, isLoading: loadingContent } = useQuery({
@@ -39,9 +41,10 @@ export default function Dashboard() {
       return response.data;
     },
     refetchInterval: 30000,
+    enabled: !!currentUser && !currentUser.is_admin, // Only run if user exists and is not admin
   });
 
-  const isLoading = loadingSubmissions || loadingContent;
+  const isLoading = loadingUser || loadingSubmissions || loadingContent;
 
   // Determine user state
   const hasSubmissions = submissions && submissions.length > 0;
