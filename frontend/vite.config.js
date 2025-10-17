@@ -12,7 +12,7 @@ export default defineConfig({
   },
   build: {
     sourcemap: true, // ✅ Enable source maps for debugging production errors
-    minify: 'terser',
+    minify: 'esbuild', // Use esbuild (default, no extra dep needed) instead of terser
     rollupOptions: {
       output: {
         manualChunks: {
