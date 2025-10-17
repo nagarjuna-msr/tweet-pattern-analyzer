@@ -31,8 +31,7 @@ app.add_middleware(
     allow_origins=[
         settings.FRONTEND_URL,
         "http://localhost:5173",
-        "https://pattern-analyzer-frontend.onrender.com",  # Old static site
-        "https://pattern-analyzer-frontend-app.onrender.com"  # New web service
+        "https://pattern-analyzer-frontend.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
