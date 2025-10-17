@@ -40,23 +40,21 @@ services:
       - key: ADMIN_PASSWORD
         generateValue: true
 
-  # Frontend Static Site
+  # Frontend - Web Service with serve (for SPA routing support)
   - type: web
     name: pattern-analyzer-frontend
-    runtime: static
+    runtime: node
     region: oregon
     branch: main
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    startCommand: npx serve -s dist -l 10000
     autoDeploy: true
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
     envVars:
       - key: VITE_API_URL
         value: https://pattern-analyzer-api.onrender.com
+      - key: NODE_VERSION
+        value: 18.20.0
 
 databases:
   - name: pattern-analyzer-db
