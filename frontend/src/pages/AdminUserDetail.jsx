@@ -25,13 +25,8 @@ export default function AdminUserDetail() {
   const { data: userDetails, isLoading, refetch } = useQuery({
     queryKey: ['admin-user-detail', userId],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8000/api/admin/users/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (!response.ok) throw new Error('Failed to fetch user details');
-      return response.json();
+      const response = await adminAPI.getUserDetails(userId);
+      return response.data;
     },
     refetchInterval: 15000, // Auto-refresh every 15 seconds
   });

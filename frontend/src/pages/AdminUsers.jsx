@@ -2,18 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { User, AlertCircle, FileText, MessageSquare, Clock, CheckCircle } from 'lucide-react';
+import { adminAPI } from '@/lib/api';
 
 export default function AdminUsers() {
   const { data: users, isLoading } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/admin/users', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      if (!response.ok) throw new Error('Failed to fetch users');
-      return response.json();
+      const response = await adminAPI.getUsers();
+      return response.data;
     },
     refetchInterval: 30000,
   });

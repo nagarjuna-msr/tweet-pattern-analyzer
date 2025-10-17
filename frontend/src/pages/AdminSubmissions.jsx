@@ -16,13 +16,8 @@ export default function AdminSubmissions() {
   const { data: allSubmissions, isLoading } = useQuery({
     queryKey: ['admin-submissions'],
     queryFn: async () => {
-      // We'll need to create this endpoint
-      const response = await fetch('http://localhost:8000/api/admin/submissions', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      return response.json();
+      const response = await adminAPI.getSubmissions();
+      return response.data;
     },
     refetchInterval: 30000,
   });
