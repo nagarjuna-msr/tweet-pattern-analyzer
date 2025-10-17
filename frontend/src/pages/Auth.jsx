@@ -4,13 +4,142 @@ import { useMutation } from '@tanstack/react-query';
 import { authAPI } from '@/lib/api';
 import { setToken } from '@/lib/auth';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap, Target, FileText, TrendingUp, Info, X } from 'lucide-react';
+
+// Step component for the 4-step process
+function Step({ icon: Icon, title, children }) {
+  return (
+    <div className="flex items-start space-x-4">
+      <div className="flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+      </div>
+      <div>
+        <h3 className="font-semibold text-white">{title}</h3>
+        <p className="text-sm text-white/80">{children}</p>
+      </div>
+    </div>
+  );
+}
+
+// Native modal component (no external dependencies)
+function WhyThisWorksModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-gray-900 text-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-6 flex items-start justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-white">Why Replies Matter More Than Likes</h2>
+            <p className="text-sm text-gray-400 mt-1">Based on analysis of 75,000+ viral tweets</p>
+          </div>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+            aria-label="Close"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6 text-gray-300">
+          <p className="text-base leading-relaxed">
+            Twitter's algorithm changed in 2023. Here's what that means for your content:
+          </p>
+
+          {/* The Numbers */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white flex items-center">
+              <span className="mr-2">📊</span> The Numbers
+            </h3>
+            <ul className="space-y-2 ml-6 text-sm">
+              <li>• A reply where you engage back = <strong className="text-white">75x weight</strong></li>
+              <li>• A like = <strong className="text-white">0.5x weight</strong></li>
+              <li>• That's a <strong className="text-white">150:1 difference</strong></li>
+            </ul>
+            <p className="text-sm italic bg-gray-800/50 p-3 rounded border-l-4 border-primary">
+              Most people optimize for likes. That's the wrong metric.
+            </p>
+          </div>
+
+          {/* What We Focus On */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white flex items-center">
+              <span className="mr-2">🎯</span> What We Focus On
+            </h3>
+            <ul className="space-y-3">
+              <li className="flex items-start space-x-3">
+                <Zap className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-white">Hooks that make people want to reply</p>
+                  <p className="text-sm text-gray-400">Not just scroll past and like</p>
+                </div>
+              </li>
+              <li className="flex items-start space-x-3">
+                <FileText className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-white">Thread structures that keep people reading</p>
+                  <p className="text-sm text-gray-400">The algorithm rewards dwell time</p>
+                </div>
+              </li>
+              <li className="flex items-start space-x-3">
+                <TrendingUp className="w-5 h-5 mt-0.5 text-primary flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-white">Topics that spark conversation</p>
+                  <p className="text-sm text-gray-400">Not just agreement, but discussion</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          {/* Why Manual Analysis */}
+          <div className="bg-primary/10 border border-primary/30 rounded-lg p-5 space-y-3">
+            <h3 className="text-lg font-semibold text-white flex items-center">
+              <span className="mr-2">⚠️</span> Why Manual Analysis
+            </h3>
+            <p className="text-sm leading-relaxed">
+              Right now, we're manually analyzing accounts and writing reports. That's 2-3 hours per user.
+            </p>
+            <p className="text-sm leading-relaxed">
+              We're starting with <strong className="text-white">5 spots</strong> to make sure the quality is there. 
+              If this works, we'll scale it.
+            </p>
+            <p className="text-sm leading-relaxed font-medium text-white">
+              No magic. No automation. Just pattern recognition from 75,000+ viral tweets and good writing.
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 bg-gray-900 border-t border-gray-700 p-6">
+          <button
+            onClick={onClose}
+            className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-3 rounded-lg transition-colors"
+          >
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const loginMutation = useMutation({
@@ -40,7 +169,7 @@ export default function Auth() {
     onSuccess: (response) => {
       setToken(response.data.access_token);
       toast.success('Account created successfully!');
-      navigate('/onboarding'); // Regular users always go to onboarding
+      navigate('/onboarding');
     },
     onError: (error) => {
       toast.error(error.response?.data?.detail || 'Registration failed');
@@ -60,52 +189,66 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Illustration/Testimonial */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary to-primary-hover p-12 text-white flex-col justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Pattern Analyzer</h1>
-          <p className="text-primary-light">Data-driven Twitter content that actually works</p>
+      {/* Left side - Value Proposition */}
+      <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-600 to-purple-700 p-12 text-white flex-col justify-center relative overflow-hidden">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+            backgroundSize: '30px 30px'
+          }}></div>
         </div>
         
-        <div className="space-y-8">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-            <p className="text-lg mb-4">
-              "This service helped me understand exactly what makes content resonate in my niche. 
-              The pattern analysis was eye-opening!"
-            </p>
-            <p className="text-sm text-primary-light">— Sarah, Content Creator</p>
+        <div className="max-w-md mx-auto relative z-10">
+          <h1 className="text-4xl font-bold mb-3 leading-tight">
+            See What's Working.<br />
+            Do More of It.
+          </h1>
+          <p className="text-white/90 mb-8 text-lg">
+            Patterns from 75,000+ viral tweets. Applied to your authentic voice.
+          </p>
+          
+          <div className="space-y-6">
+            <Step icon={Target} title="Submit 5-10 Profiles That Work">
+              Give us Twitter accounts in your niche that get good engagement. We'll find what they're doing right.
+            </Step>
+            <Step icon={Zap} title="See the Patterns">
+              Get a report showing which hooks get replies, thread structures that work, and topics that perform.
+            </Step>
+            <Step icon={FileText} title="Turn Your Ideas Into Threads">
+              Share what you want to say. We'll structure it using patterns that work—without losing your voice.
+            </Step>
+            <Step icon={TrendingUp} title="Post and Track Results">
+              The patterns work because they're based on what already gets replies. More replies = more reach.
+            </Step>
           </div>
           
-          <div className="space-y-4 text-sm text-primary-light">
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Niche-specific pattern analysis</span>
+          {/* Modal trigger button */}
+          <button 
+            onClick={() => setShowModal(true)}
+            className="w-full text-left mt-8 bg-white/10 hover:bg-white/20 p-4 rounded-lg transition-all duration-200 group border border-white/20"
+          >
+            <div className="flex items-center space-x-3">
+              <Info className="w-5 h-5 text-white flex-shrink-0" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-white">Why Replies Matter More Than Likes</h4>
+                <p className="text-xs text-white/70 mt-0.5">The algorithm changed. Here's what matters now.</p>
+              </div>
+              <span className="text-xs text-white/60 group-hover:text-white/90 transition-colors">
+                Read more →
+              </span>
             </div>
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Ready-to-post tweets based on proven patterns</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Data-driven, not guesswork</span>
-            </div>
-          </div>
+          </button>
         </div>
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="md:hidden mb-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900">Pattern Analyzer</h1>
-            <p className="text-sm text-gray-600 mt-1">Data-driven Twitter content</p>
+            <p className="text-sm text-gray-600 mt-1">Content based on what works</p>
           </div>
 
           {/* Tab Toggle */}
@@ -164,7 +307,7 @@ export default function Auth() {
               />
               {!isLogin && (
                 <p className="mt-1 text-xs text-gray-500">
-                  Min 8 characters, 1 uppercase, 1 number
+                  Min 8 characters
                 </p>
               )}
             </div>
@@ -221,6 +364,9 @@ export default function Auth() {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      <WhyThisWorksModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }
