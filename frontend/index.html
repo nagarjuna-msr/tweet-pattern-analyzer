@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Pattern Analyzer</title>
+    
+    <!-- OpenPanel Analytics -->
+    <script src="https://openpanel.dev/op1.js" defer></script>
+    <script>
+      window.op = window.op || function(...args) {
+        (window.op.q = window.op.q || []).push(args);
+      };
+      op('init', {
+        clientId: '18df03a2-4eb3-4c35-a580-877f5742c5fd',
+        apiUrl: window.location.hostname === 'localhost' ? 'http://localhost:3000' : 'http://localhost:3000',
+        trackScreenViews: true,
+        trackOutgoingLinks: true,
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
